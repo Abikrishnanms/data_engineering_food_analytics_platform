@@ -12,7 +12,7 @@
 
 ---
 
-## 🌐 Live Cloud Deployments & Interactive Access
+## Live Cloud Deployments & Interactive Access
 
 The entire platform is deployed live and fully functional in the cloud 24/7:
 
