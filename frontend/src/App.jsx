@@ -7,6 +7,7 @@ import DistributionCards from './components/DistributionCards';
 import NlqSection from './components/NlqSection';
 import ArchitectureSection from './components/ArchitectureSection';
 import Footer from './components/Footer';
+import { API_BASE } from './config';
 import './App.css';
 
 export default function App() {
@@ -41,13 +42,13 @@ export default function App() {
         paymentsRes,
         hourlyRes,
       ] = await Promise.all([
-        fetch(`/api/kpis?start_date=${start}&end_date=${end}`),
-        fetch(`/api/trends/daily?start_date=${start}&end_date=${end}`),
-        fetch(`/api/restaurants/top?start_date=${start}&end_date=${end}&limit=5`),
-        fetch(`/api/menu/top?start_date=${start}&end_date=${end}&limit=8`),
-        fetch('/api/cuisines/mix'),
-        fetch('/api/payments/mix'),
-        fetch('/api/hourly'),
+        fetch(`${API_BASE}/api/kpis?start_date=${start}&end_date=${end}`),
+        fetch(`${API_BASE}/api/trends/daily?start_date=${start}&end_date=${end}`),
+        fetch(`${API_BASE}/api/restaurants/top?start_date=${start}&end_date=${end}&limit=5`),
+        fetch(`${API_BASE}/api/menu/top?start_date=${start}&end_date=${end}&limit=8`),
+        fetch(`${API_BASE}/api/cuisines/mix`),
+        fetch(`${API_BASE}/api/payments/mix`),
+        fetch(`${API_BASE}/api/hourly`),
       ]);
 
       if (kpiRes.ok) setKpis(await kpiRes.json());

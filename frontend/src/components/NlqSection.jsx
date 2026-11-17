@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE } from '../config';
 import {
   MessageSquareText,
   Send,
@@ -37,7 +38,7 @@ export default function NlqSection() {
     setResult(null);
 
     try {
-      const response = await fetch('/api/nlq', {
+      const response = await fetch(`${API_BASE}/api/nlq`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: q.trim() }),
