@@ -1,12 +1,27 @@
 # FoodFlow — Enterprise Food Delivery Lakehouse & Intelligence Platform
 
+[![Live App](https://img.shields.io/badge/Live%20Dashboard-Vercel-black.svg?logo=vercel&logoColor=white)](https://foodflow-analytics-ashen.vercel.app)
+[![Live API](https://img.shields.io/badge/Live%20API-Render-46E3B7.svg?logo=render&logoColor=black)](https://foodflow-api-xil0.onrender.com/docs)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB.svg?logo=react&logoColor=black)](https://react.dev/)
 [![Supabase](https://img.shields.io/badge/Supabase-Cloud%20Postgres%20%26%20Storage-3ECF8E.svg?logo=supabase&logoColor=white)](https://supabase.com/)
 [![DuckDB](https://img.shields.io/badge/DuckDB-Data%20Marts-FFF000.svg?logo=duckdb&logoColor=black)](https://duckdb.org/)
 [![Tests](https://img.shields.io/badge/Tests-46%20Passed-success.svg)](tests/)
-[![Data Scale](https://img.shields.io/badge/Data%20Scale-2.29M%2B%20Records-blue.svg)](#relational-data-scale)
+[![Data Scale](https://img.shields.io/badge/Data%20Scale-2.29M%2B%20Records-blue.svg)](#6-relational-data-scale)
+
+---
+
+## 🌐 Live Cloud Deployments & Interactive Access
+
+The entire platform is deployed live and fully functional in the cloud 24/7:
+
+| Service | Public URL | Description |
+|:---|:---|:---|
+| **Executive React Dashboard** | **[foodflow-analytics-ashen.vercel.app](https://foodflow-analytics-ashen.vercel.app)** | Production React 19 Executive UI with interactive trends and NLQ |
+| **Analytical REST API** | **[foodflow-api-xil0.onrender.com](https://foodflow-api-xil0.onrender.com)** | High-performance FastAPI backend connected to Supabase |
+| **Interactive API Documentation** | **[foodflow-api-xil0.onrender.com/docs](https://foodflow-api-xil0.onrender.com/docs)** | Live Swagger UI to explore and test endpoints in the browser |
+| **Cloud Database & Storage** | **Supabase AWS Tokyo (`ap-northeast-1`)** | PostgreSQL relational database (2.29M rows) + Medallion Lakehouse |
 
 ---
 
@@ -14,7 +29,7 @@
 
 **FoodFlow** is an end-to-end cloud data engineering, lakehouse, and conversational business intelligence platform built to process, model, and analyze **2,294,057 real-world food delivery transactions** spanning 2022 to 2025.
 
-FoodFlow eliminates common data engineering failure modes—such as data drift, row-multiplying joins, unindexed slow aggregations, and unsafe text-to-SQL generation. The platform features:
+FoodFlow eliminates common enterprise data failure modes—such as data drift, row-multiplying joins, unindexed slow aggregations, and unsafe text-to-SQL generation. The platform features:
 
 * **Production Data Scale:** 2.29M+ rows across 5 normalized relational entities (`users`, `restaurants`, `menu`, `orders`, `order_items`).
 * **Automated 3-Stage ETL Pipeline:** Raw ingestion, 16 automated quality gates, and canonical data standardization.
@@ -23,6 +38,7 @@ FoodFlow eliminates common data engineering failure modes—such as data drift, 
 * **Strict Analytics Contract:** Prevents invalid metrics (such as "averaging averages") by calculating non-additive ratios dynamically via stored procedures (`fn_kpi_summary`).
 * **Safe Natural Language Query (NLQ) Engine:** Plain-English queries compiled into read-only SQL validated against an Abstract Syntax Tree (AST) parser.
 * **Executive React 19 Dashboard:** High-performance, clean UI styled exclusively in a professional **Blue & White** theme.
+* **Open REST API Layer:** Allows data analysts, data scientists, and BI tools to consume data directly without database passwords.
 
 ---
 
@@ -146,7 +162,73 @@ The user interface is an executive, high-performance single-page application bui
 
 ---
 
-## 6. Relational Data Scale
+## 6. Public Data API — How Analysts & Data Scientists Can Use This Data
+
+The live cloud REST API (**`https://foodflow-api-xil0.onrender.com`**) is completely public and open. Any data analyst, data scientist, or BI engineer can consume the platform's data directly into their workflows without needing database passwords or local setups.
+
+### 1. Interactive Swagger Explorer (No-Code)
+Open **[`https://foodflow-api-xil0.onrender.com/docs`](https://foodflow-api-xil0.onrender.com/docs)** in your browser to view all endpoints, test custom date parameters, and inspect JSON payloads interactively.
+
+### 2. Direct Integration in Python / Pandas
+Data scientists can load clean analytical data straight into Pandas DataFrames in seconds:
+
+```python
+import pandas as pd
+
+# 1. Fetch 365-day daily operational time-series
+url_trends = "https://foodflow-api-xil0.onrender.com/api/trends/daily?start_date=2025-01-01&end_date=2025-12-31"
+df_trends = pd.read_json(url_trends)
+print(df_trends.head())
+
+# 2. Fetch top grossing partner restaurants
+url_top_restaurants = "https://foodflow-api-xil0.onrender.com/api/restaurants/top?limit=10"
+df_restaurants = pd.read_json(url_top_restaurants)
+print(df_restaurants[['restaurant_name', 'city', 'cuisine', 'qualifying_revenue']])
+```
+
+### 3. Natural Language Query (NLQ) as an API
+Analysts can submit plain-English questions programmatically and receive both the generated SQL and clean tabular records:
+
+```python
+import requests
+
+# Ask any business question in plain English
+response = requests.post(
+    "https://foodflow-api-xil0.onrender.com/api/nlq",
+    json={"question": "Top 5 best selling menu items"}
+)
+payload = response.json()
+
+print("Compiled SQL:", payload["sql"])
+print("Execution Latency:", payload["duration_ms"], "ms")
+print("Data Rows:", payload["data"])
+```
+
+### 4. BI Tools & Spreadsheets (Power BI, Tableau, Excel)
+* **Power BI & Tableau:** Select **Get Data &rarr; Web** and paste any endpoint (e.g., `https://foodflow-api-xil0.onrender.com/api/trends/daily`) to establish a live or scheduled analytical data feed.
+* **Microsoft Excel / Google Sheets:** Use **Data &rarr; From Web** to pull live restaurant, cuisine, or payment distributions directly into a worksheet.
+* **cURL / Command Line:**
+  ```bash
+  curl -X GET "https://foodflow-api-xil0.onrender.com/api/kpis?start_date=2025-01-01&end_date=2025-12-31"
+  ```
+
+### 5. API Endpoints Catalog
+
+| Endpoint | Method | Parameters | Description |
+|:---|:---:|:---|:---|
+| `/api/health` | `GET` | *None* | Verifies API and Supabase Cloud database connectivity |
+| `/api/kpis` | `GET` | `start_date`, `end_date` | 8 core non-additive KPIs (Orders, Revenue, AOV, Cancellation Rate, Active Users) |
+| `/api/trends/daily` | `GET` | `start_date`, `end_date` | Daily time-series of total orders, qualifying revenue, and cancellation rates |
+| `/api/restaurants/top` | `GET` | `start_date`, `end_date`, `limit` | Ranked partner restaurants by qualifying revenue via `fn_top_restaurants` |
+| `/api/menu/top` | `GET` | `start_date`, `end_date`, `limit` | Best-selling dishes ranked by units sold and revenue contribution |
+| `/api/cuisines/mix` | `GET` | *None* | Revenue and volume distribution across top cuisines |
+| `/api/payments/mix` | `GET` | *None* | Payment method market share (UPI, Credit Card, Debit Card, COD, Wallet) |
+| `/api/hourly` | `GET` | *None* | 24-hour order traffic patterns highlighting peak lunch and dinner hours |
+| `/api/nlq` | `POST` | `{"question": "..."}` | Translates plain English into safe, AST-validated SQL executed on Supabase |
+
+---
+
+## 7. Relational Data Scale
 
 | Entity | Exact Records | Primary Key | Key Attributes |
 |:---|---:|:---|:---|
@@ -159,7 +241,7 @@ The user interface is an executive, high-performance single-page application bui
 
 ---
 
-## 7. Quick Start Guide
+## 8. Quick Start Guide (Local Setup)
 
 ### Step 1: Configure Environment Variables
 Copy `.env.example` to `.env` and provide your Supabase PostgreSQL credentials:
@@ -177,7 +259,7 @@ SUPABASE_KEY=your_supabase_service_role_key
 ```powershell
 python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-API Swagger documentation is live at `http://127.0.0.1:8000/docs`.
+API Swagger documentation will be live at `http://127.0.0.1:8000/docs`.
 
 ### Step 3: Start the React Frontend
 ```powershell
@@ -189,7 +271,7 @@ Open **`http://localhost:5173`** in your browser to access the executive dashboa
 
 ---
 
-## 8. Repository Structure
+## 9. Repository Structure
 
 ```
 data_engineering_food_analytics_platform/
@@ -200,6 +282,8 @@ data_engineering_food_analytics_platform/
 ├── frontend/                        # React 19 Executive UI (Blue & White Theme)
 │   ├── src/components/              # Header, KpiCards, DailyTrendChart, TopRankings, NlqSection
 │   ├── src/App.jsx                  # Main dashboard assembly and parallel data fetching
+│   ├── src/config.js                # Dynamic API Base URL resolver (Vercel & local proxy)
+│   ├── vercel.json                  # SPA routing configuration for Vercel
 │   └── vite.config.js               # Reverse-proxy configuration to FastAPI (/api)
 │
 ├── src/lakehouse/                   # Medallion Data Lake on Supabase Storage
@@ -218,6 +302,7 @@ data_engineering_food_analytics_platform/
 │   ├── validator.py                 # AST safety validator & view allowlist gate
 │   └── rules.py                     # Deterministic offline SQL translation rules
 │
+├── render.yaml                      # Infrastructure-as-Code blueprint for Render deployment
 └── tests/                           # Automated Quality & Reconciliation Suites
     ├── run_tests.py                 # 16 database constraint verifications (all pass)
     └── test_nlq.py                  # 30 automated NLQ behavior and safety tests
